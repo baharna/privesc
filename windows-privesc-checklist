@@ -1,0 +1,66 @@
+# Checklist for Windows systems
+# Sources:
+# http://www.fuzzysecurity.com/tutorials/16.html
+# https://www.toshellandback.com/2015/11/24/ms-priv-esc/
+# https://www.sock-raw.org/wiki/doku.php
+# https://www.youtube.com/watch?v=kMG8IsCohHA
+# https://www.youtube.com/watch?v=PC_iMqiuIRQ
+1. Information Gathering
+ - System information
+ - Systeminfo 
+ - Net users
+ - SET
+ - whoami/echo %username% && hostname /echo %hostname%
+ - Net user <username> || net user /<domain> <username>
+ - Netstat -ano (look for external connections or connections to 127.0.0.1)
+ - Net start && tasklist /SVC
+ - Netsh firewall show state
+ - Schtasks /query /fo LIST /v
+ - driverquery
+2. Check for passwords in files
+ - C:\Users\whoever\Desktop\passwords.xls/.doc
+ - Dir /b /s web.config
+ - Dir /b /s unattend.xml
+ - Dir /b /s unattended.xml
+ - Dir /b /s unattend.txt
+ - Dir /b /s sysprep.inf
+ - Dir /b /s sysprep.xml
+ - Dir /b /s *pass*
+\\domain_controller\SYSVOL\??? (groups.xml? Pdf page 356) (ONLY ON DOMAIN JOINED HOSTS)
+Vnc.ini or ultravnc.ini (easily decrypted passwords)
+Findstr /si password *.txt *.xml *.ini
+dir /a-r-d /s /b (searches for writable files)
+Enumerate missing patches
+windows-exploit-suggester.py
+Metasploit - post/windows/gather/enum_patches
+Metasploit  post/multi/recon/local_exploit_suggester
+wmic qfe get Caption,Description,HotFixID,InstalledOn
+wmic qfe list brief /format:htable > "%USERPROFILE%\hotfix.html"
+Check service permissions
+When checking weak services, you are looking for the ability to write or change the service or change permissions on the service (Service_change_config, write_dac, write_owner, generic_write, generic_all permissions)
+Accesschk.exe -ucwq “Authenticated Users” *
+Accesschk.exe -ucwq “Users” *
+Accesschk.exe -ucqw “Everyone” *
+Check file permissions
+Accesschk.exe -uwqs “Authenticated Users” c:\*.*
+Accesschk.exe -uwqs “Users” c:\*.*
+Accesschk.exe -uwqs “Everyone” c:\*.*
+Cacls “C:\Program Files” /T | findstr Users
+Check Directory permissions
+Accesschk.exe -uwdqs “Authenticated Users” c:\
+Accesschk.exe -uwqds “Users” c:\
+Accesschk.exe -uwqds “Everyone” c:\
+Check registry settings
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer\AlwaysInstallElevated
+Reg query \\HKCU\Software\ORL\WinVNC3\Password
+Reg query \\HKLM\Software\Microsoft\Windows NT\CurrentVersion\WinLogon
+Reg query HKLM /f password /t REG_SZ /s
+Reg query HKCU /f password /t REG_SZ /s
+NtGdiEnableEudc (MS11-011)
+Service Tracing Key (MS10-059)
+Registry symlink vuln (MS10-021)
+Assorted techniques:
+Check for any programs installed outside the Program Files directory. Check permissions on these directories and files.
+Check scheduled tasks (AT, schtasks, compmgmt.msc) for binaries that can be overwritten/otherwise controlled
+Check Autoruns/scheduled tasks for orphaned binaries (binaries that were installed at one point but the directory no longer exists, however a task/autorun still exists referencing that binary). 
