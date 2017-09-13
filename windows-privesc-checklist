@@ -36,7 +36,8 @@
  - wmic qfe get Caption,Description,HotFixID,InstalledOn
  - wmic qfe list brief /format:htable > "%USERPROFILE%\hotfix.html"
 4. Check service permissions
- - When checking weak services, you are looking for the ability to write or change the service or change permissions on the service (Service_change_config, write_dac, write_owner, generic_write, generic_all permissions)
+ - When checking weak services, you are looking for the ability to write or change the service or change permissions on the service 
+ (Service_change_config, write_dac, write_owner, generic_write, generic_all permissions)
  - Accesschk.exe -ucwq “Authenticated Users” *
  - Accesschk.exe -ucwq “Users” *
  - Accesschk.exe -ucqw “Everyone” *
@@ -63,4 +64,5 @@
 9. Assorted techniques:
  - Check for any programs installed outside the Program Files directory. Check permissions on these directories and files.
  - Check scheduled tasks (AT, schtasks, compmgmt.msc) for binaries that can be overwritten/otherwise controlled
- - Check Autoruns/scheduled tasks for orphaned binaries (binaries that were installed at one point but the directory no longer exists, however a task/autorun still exists referencing that binary). 
+ - Check Autoruns/scheduled tasks for orphaned binaries (binaries that were installed at one point but the directory no longer exists, 
+ however a task/autorun still exists referencing that binary). 
